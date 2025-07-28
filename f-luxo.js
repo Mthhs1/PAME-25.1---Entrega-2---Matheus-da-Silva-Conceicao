@@ -96,7 +96,7 @@ class quartoClasse {
         this.status = "Disponivel"
     }
 
-    atualizarDescricao(){
+    atualizarDescricao() {
         this.descricao = `Quarto ${this.id_quarto}. Tipo ${this.tipo}, ${this.garagem} garagem e com ${this.quantidade_camas} camas. Possui valor por noite igual a ${this.valor_por_noite} reais`
     }
 
@@ -475,13 +475,7 @@ class sistema {
 
                 console.log("\n".repeat(5))
                 for (const quarto of this.quartos) {
-                    if (quarto.status == "Disponivel") {
-                        console.log(quarto.descricao)
-                    }
-                    else {
-                        continue
-                    }
-
+                    console.log(quarto.descricao)
                 }
 
             }
@@ -489,51 +483,66 @@ class sistema {
             //Fazer reserva
             else if (opcao_menu_cliente == "3") {
 
+                console.log("\n".repeat(5))
+                for (const quarto of this.quartos) {
+                    console.log(quarto.descricao)
+                }
+
+
                 while (true) {
                     console.log(`
                 ------ Fazer reserva ------
                 Dos quartos disponiveis, qual deseja fazer reserva?`)
 
                     var opcao_fazer_reserva = requisicao.question("Digite o numero do quarto ")
-                    var encontrou_quarto_disponivel = false
 
-                    if (typeof parseInt(opcao_fazer_reserva) == "number") {
+                    if (typeof parseInt(opcao_fazer_reserva) == "number" && !(isNaN(parseInt(opcao_fazer_reserva)))) {
 
                         var id_quarto = parseInt(opcao_fazer_reserva)
 
-                        for (const quarto of this.quartos) {
 
-                            //encontrou o quarto digitado
-                            if (quarto.id_quarto == id_quarto) {
+                        if (id_quarto < this.quartos.length) {
 
-                                // Verificando se o quarto esta disponivel
-                                if (quarto.status == "Disponivel") {
+                            var encontrou_data_igual = false
 
-                                    //efetuando a reserva
-                                    var opcao_data_reserva = requisicao.question("Insira a data desejada para a reserva: ")
-                                    let possivel_reserva = new reservaClasse(sistema.id_reserva, cliente_menu.id_cliente, opcao_data_reserva, id_quarto)
-                                    sistema.id_reserva += 1
-                                    encontrou_quarto_disponivel = true
+                            var opcao_data_reserva = requisicao.question("Insira a data desejada para a reserva: ")
+                            for (const reserva_for of this.reservas) {
 
-                                    console.log("Reserva efetuada com sucesso!")
-                                    console.log("Aguarde um funcionario aprovar sua reserva!")
-                                    this.reservas.push(possivel_reserva)
-                                    quarto.ocuparQuarto()
+                                if (id_quarto == reserva_for.id_quarto && opcao_data_reserva == reserva_for.data_entrada) {
 
+                                    encontrou_data_igual = true
                                     break
 
                                 }
 
                             }
 
+                            if (encontrou_data_igual) {
+                                console.log("Há um quarto ocupado nesse mesmo dia! Tente novamente")
+                                continue
+                            }
+
+                            let possivel_reserva = new reservaClasse(sistema.id_reserva, cliente_menu.id_cliente, opcao_data_reserva, id_quarto)
+                            sistema.id_reserva += 1
+
+                            console.log("Reserva efetuada com sucesso!")
+                            console.log("Aguarde um funcionario aprovar sua reserva!")
+                            this.reservas.push(possivel_reserva)
+
+                            break
 
                         }
 
-                        if (!encontrou_quarto_disponivel) {
-                            console.log("Quarto ja ocupado!")
+                        else {
+                            console.log("Quarto nao consta na base de dados!")
                             continue
                         }
 
+                    }
+
+                    if (!encontrou_quarto_disponivel) {
+                        console.log("Quarto ja ocupado!")
+                        continue
                     }
 
                     else {
@@ -541,7 +550,7 @@ class sistema {
                         console.log("Valor digitado incorreto! Tente novamente!")
                         continue
                     }
-                    break
+
 
                 }
             }
@@ -1256,7 +1265,7 @@ class sistema {
 
                     else if (opcao_editar_quarto_escolhido == "4") {
 
-                            if (quarto.garagem == "Com") {
+                        if (quarto.garagem == "Com") {
                             quarto.garagem = "Sem"
                             console.log("Quarto alterado para sem garagem!")
                             quarto.atualizarDescricao()
@@ -1314,7 +1323,7 @@ class sistema {
             while (true) {
                 console.log("\n".repeat(5))
                 console.log(`
-                ------ Funcionario (login) ------`)
+                ------ Cliente (login) ------`)
 
                 var usuario = requisicao.question("Digite seu usuario: ")
                 var senha = requisicao.question("Digite sua senha: ")
